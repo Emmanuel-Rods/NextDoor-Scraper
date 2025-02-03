@@ -95,6 +95,7 @@ async function run(){
   
 
   console.log("deepLinks" , deepLinks); // Output the deep links
+  console.log("Deeplinks" , deepLinks.length)
   let totalData = []
   for (const link of deepLinks) {
     const base = 'https://nextdoor.com'
