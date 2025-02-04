@@ -118,6 +118,7 @@ const extractPhoneNumbers = (html) => {
 
   const validNumbers = matches.filter((number) => {
     // Normalize for consistency
+    if (typeof number !== "string") return false; // Ensure it's a string
     const normalizedNumber = number.replace(/[-.\s()]/g, "");
 
     return !fakeNumbers.includes(normalizedNumber);
@@ -280,7 +281,7 @@ async function emailCrawler(jsonArray) {
     try {
       if (website && !email) {
        // const [emailArray] = await jsRender(website);
-       const { emails: emailArray, phoneNumbers: phoneNumbersArray } = await jsRender(website);
+       const { emails: emailArray = [], phoneNumbers: phoneNumbersArray = [] } = await jsRender(website);
         data.email = emailArray[0] || null;
         data.phone  = data.phone ? data.phone : phoneNumbersArray[0] || null
         rows.push(data); //modified data
@@ -371,7 +372,7 @@ async function jsRender(url) {
           await pageWithCookies.waitForSelector("body", { timeout: 10000 });
           const subPageHTML = await pageWithCookies.content();
           const subPageEmails = extractEmails(subPageHTML);
-          const phoneNumbers = extractPhoneNumbers(subPageHTML); //extracts phone numbers
+          const phoneNumbers = extractPhoneNumbers(subPageHTML) || []; //extracts phone numbers add OR NULL
           if (subPageEmails && subPageEmails.length > 0) {
             emails.push(...subPageEmails);
           }
@@ -388,8 +389,8 @@ async function jsRender(url) {
     console.log("Collected Phone Numbers:", phoneNumbersArr);
 
     return {
-      emails: Array.from(new Set(emails)),
-      phoneNumbers: Array.from(new Set(phoneNumbersArr)),
+      emails: Array.from(new Set(emails || [])),
+      phoneNumbers: Array.from(new Set(phoneNumbersArr || [])),
     };
 
     // return Array.from(new Set(emails));
@@ -406,5 +407,12 @@ async function jsRender(url) {
     }
   }
 }
-
+emailCrawler([{
+  name: "Beasley Bryant & Company Cpa's",
+  phone: '1220976771',
+  email: null,
+  website: 'http://www.thetaxladyea.com',
+  categories: 'Payroll service, Accountant, Estate planner',
+  commentDate: '20 Feb 21'
+}])
 module.exports = emailCrawler;
