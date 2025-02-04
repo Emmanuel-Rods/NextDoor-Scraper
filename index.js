@@ -28,7 +28,7 @@ function createXlsxFile(data, fileName) {
 async function run(){
   const browser = await puppeteerExtra.launch({
     headless: false,
-    args: ["--force-device-scale-factor=1"],
+    args: ["--force-device-scale-factor=1" , '--start-maximized'],
   });
   //setting cookies
   const cookiesString = await fsPromise.readFile("./cookies.json");
